@@ -12,8 +12,11 @@
   "type": "commonjs",
   "dependencies": {
     "@types/smtp-server": "^3.5.10",
+    "bcryptjs": "^3.0.2",
+    "cookie-parser": "^1.4.7",
     "dotenv": "^16.5.0",
     "express": "^5.1.0",
+    "jsonwebtoken": "^9.0.2",
     "mailparser": "^3.7.3",
     "mongoose": "^8.15.1",
     "smtp-server": "^3.13.8"
