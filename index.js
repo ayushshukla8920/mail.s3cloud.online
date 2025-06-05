@@ -12,6 +12,7 @@ const server = new SMTPServer({
     },
     onRcptTo(address, session, cb) {
         console.log("Mail at: ", address.address, " at: ", session.id);
+        cb();
     },
     onData(stream, session, cb) {
         let rawData = "";
