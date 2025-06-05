@@ -17,7 +17,10 @@ const server = new SMTPServer({
         stream.on('data',(data)=>{
             console.log("Data at: ",session.id,"\n",data.toString());
         })
-        stream.on('end',cb());
+        stream.on('end', ()=>{
+            console.log("Ended: ",session.id);
+            cb();
+        });
     }
 });
 
