@@ -1,4 +1,18 @@
+//Importing Required Libraries
 const { SMTPServer } = require("smtp-server");
+const { simpleParser } = require('mailparser');
+const express = require('express');
+require('dotenv').config();
+const mongoose = require('mongoose');
+const saveMessage = require('./utils/saveMailToDB');
+
+//Database Connection
+mongoose.connect(process.env.MONGOURL)
+.then(()=>console.log("Database Connected Successfully !!"))
+.catch(err=>console.log("Database Connection Error: ",err));
+
+//SMTP and HTTP Server Setups
+const app = express();
 const server = new SMTPServer({
     allowInsecureAuth: true,
     authOptional: true,
@@ -15,25 +29,25 @@ const server = new SMTPServer({
         cb();
     },
     onData(stream, session, cb) {
-        let rawData = "";
+        simpleParser(stream)
+        .then(async parsed => {
+            console.log("📨 Received email:", parsed.subject);
 
-        stream.on("data", (chunk) => {
-            rawData += chunk.toString(); // Collect full message
-        });
-
-        stream.on("end", () => {
-            console.log("Data at:", session.id, "\n", rawData); // Log full message
-            cb(); // MUST call after reading entire stream
-        });
-
-        stream.on("error", (err) => {
-            console.error("Stream error:", err);
+            await saveMessage(parsed);  // Save to DB
+            cb();
+        })
+        .catch(err => {
+            console.error("❌ Failed to parse email:", err);
             cb(err);
         });
     }
-
 });
 
+
+//Listening Server on Different Ports
 server.listen(25, () => {
-    console.log("SMTP Server is Online...");
+    console.log("SMTP Server is Online on PORT 25 ...");
+})
+app.listen(800,()=>{
+    console.log("Mail Client Server is Online on PORT 800 ...");
 })
