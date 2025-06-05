@@ -5,6 +5,8 @@ const express = require('express');
 require('dotenv').config();
 const mongoose = require('mongoose');
 const saveMessage = require('./utils/saveMailToDB');
+const User = require('./models/user');
+
 
 //Database Connection
 mongoose.connect(process.env.MONGOURL)
@@ -17,22 +19,30 @@ const server = new SMTPServer({
     allowInsecureAuth: true,
     authOptional: true,
     onConnect(session, cb) {
-        console.log("New Connection: ", session.id);
         cb();
     },
     onMailFrom(address, session, cb) {
-        console.log("New Mail from: ", address.address, " at: ", session.id);
         cb();
     },
     onRcptTo(address, session, cb) {
-        console.log("Mail at: ", address.address, " at: ", session.id);
-        cb();
+        const recipientEmail = address.address.toLowerCase();
+        User.findOne({ email: recipientEmail })
+        .then(user => {
+            if (!user) {
+                console.warn(`⛔ Email rejected: No user found for ${recipientEmail}`);
+                return cb(new Error('550 User not found'));
+            }
+            return cb();
+        })
+        .catch(err => {
+            console.error("❌ DB Error while checking recipient:", err);
+            cb(new Error('451 Temporary server error'));
+        });
     },
     onData(stream, session, cb) {
         simpleParser(stream)
         .then(async parsed => {
             console.log("📨 Received email:", parsed.subject);
-
             await saveMessage(parsed);  // Save to DB
             cb();
         })
