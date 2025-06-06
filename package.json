@@ -19,6 +19,7 @@
     "jsonwebtoken": "^9.0.2",
     "mailparser": "^3.7.3",
     "mongoose": "^8.15.1",
+    "react-router-dom": "^7.6.2",
     "smtp-server": "^3.13.8"
   }
 }

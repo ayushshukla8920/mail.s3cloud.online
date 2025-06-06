@@ -9,6 +9,7 @@ const cookieparser = require('cookie-parser');
 const bcrypt = require('bcryptjs');
 const salt = bcrypt.genSaltSync(10);
 const jwt = require('jsonwebtoken');
+const path = require('path');
 require('dotenv').config();
 
 
@@ -62,9 +63,14 @@ const server = new SMTPServer({
 
 //Express Middlewares
 app.use(express.json());
+app.use(express.static(path.join(__dirname, 'client/dist')));
 
 
 //HTTP API Routes
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'client/dist', 'index.html'));
+});
+
 app.post("/api/accounts/login",async(req,res)=>{
     try{
         const {email,password} = req.body;
