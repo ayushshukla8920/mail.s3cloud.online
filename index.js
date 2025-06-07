@@ -67,7 +67,7 @@ app.use(express.static(path.join(__dirname, 'client/dist')));
 
 
 //HTTP API Routes
-app.get('/', (req, res) => {
+app.get('/{*any}', (req, res) => {
   res.sendFile(path.join(__dirname, 'client/dist', 'index.html'));
 });
 
