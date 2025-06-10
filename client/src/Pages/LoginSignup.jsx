@@ -7,13 +7,6 @@ export default function LoginSignup() {
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
-  // Check if user is logged in (cookie exists)
-  useEffect(() => {
-    if (document.cookie.includes("_authtoken")) {
-      navigate("/"); // Redirect if logged in
-    }
-  }, [navigate]);
-
   const handleChange = (e) => {
     setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
